@@ -34,8 +34,7 @@ Makefile
 *.lib
 *.a
 
-# IDE配置文件
-.vscode/
+# IDE配置文件（保留.vscode/用于项目配置）
 .idea/
 *.swp
 *.swo

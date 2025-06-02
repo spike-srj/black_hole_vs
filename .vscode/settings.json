@@ -1,0 +1,23 @@
+{
+    "cmake.configureOnOpen": true,
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.generator": "Visual Studio 17 2022",
+    "cmake.preferredGenerators": [
+        "Visual Studio 17 2022",
+        "Visual Studio 16 2019",
+        "MinGW Makefiles",
+        "Unix Makefiles"
+    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.intelliSenseMode": "windows-msvc-x64",
+    "files.associations": {
+        "*.glsl": "glsl",
+        "*.vert": "glsl",
+        "*.frag": "glsl",
+        "*.geom": "glsl",
+        "*.comp": "glsl"
+    },
+    "cmake.debugConfig": {
+        "cwd": "${workspaceFolder}/build/bin"
+    }
+} 
