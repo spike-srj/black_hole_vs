@@ -4,23 +4,22 @@
 #include"Camera.h"
 #include <vector>
 #include <map>
-#include <GL/glut.h>
 using namespace std;
-//²ÄÖÊ¹âÕÕÌùÍ¼
+//Ê¹Í¼
 
 
 //
-//µ±ÓÃ»§¸Ä±ä´°¿ÚµÄ´óÐ¡µÄÊ±ºò£¬ÊÓ¿ÚÒ²Ó¦¸Ã±»µ÷Õû¡£
-//¶Ô´°¿Ú×¢²áÒ»¸ö»Øµ÷º¯Êý(Callback Function)£¬Ëü»áÔÚÃ¿´Î´°¿Ú´óÐ¡±»µ÷ÕûµÄÊ±ºò±»µ÷ÓÃ
+//ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ä±ä´°ï¿½ÚµÄ´ï¿½Ð¡ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ó¿ï¿½Ò²Ó¦ï¿½Ã±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//ï¿½Ô´ï¿½ï¿½ï¿½×¢ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½(Callback Function)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½Î´ï¿½ï¿½Ú´ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ò±»µï¿½ï¿½ï¿½
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	//glViewportº¯ÊýÇ°Á½¸ö²ÎÊý¿ØÖÆ´°¿Ú×óÏÂ½ÇµÄÎ»ÖÃ¡£µÚÈý¸öºÍµÚËÄ¸ö²ÎÊý¿ØÖÆäÖÈ¾´°¿ÚµÄ¿í¶ÈºÍ¸ß¶È£¨ÏñËØ£©
+	//glViewportï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â½Çµï¿½Î»ï¿½Ã¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½ï¿½ÚµÄ¿ï¿½ï¿½ÈºÍ¸ß¶È£ï¿½ï¿½ï¿½ï¿½Ø£ï¿½
 	glViewport(0, 0, width, height);
 }
 
 
-/*******************************************¶¨Òå³£Á¿************************************************/
-//ÉèÖÃ´°¿ÚµÄ¿íºÍ¸ß
+/*******************************************ï¿½ï¿½ï¿½å³£ï¿½ï¿½************************************************/
+//ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ÚµÄ¿ï¿½ï¿½Í¸ï¿½
 const unsigned int WIDTH = 3440;
 const unsigned int HEIGHT = 1440;
 int _width = WIDTH;
@@ -28,7 +27,7 @@ int _height = HEIGHT;
 
 uint VAO_cube = 0;
 uint VAO_sky = 0; 
-uint VAO_fullscreen_quad = 0; // ÓÃÓÚ´¥·¢ºÚ¶´Æ¬¶Î×ÅÉ«Æ÷
+uint VAO_fullscreen_quad = 0; // ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½Ú¶ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½
 //uint VAO_plane = 0;
 //uint VAO_window = 0;
 //uint VAO_screen = 0;
@@ -36,13 +35,13 @@ uint VAO_R_cube = 0;
 
 ffImage* _pImage = NULL;
 
-//ÉùÃ÷shader
+//ï¿½ï¿½ï¿½ï¿½shader
 Shader  _shader;
 Shader  _shader_sky;
 Shader  _shader_env;
 Shader  _shader_blackhole;
 
-//¹âÕÕÌùÍ¼
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼
 uint            _textureBox = 0;
 uint            _textureSky = 0;
 uint            _textureMilkway = 0;
@@ -52,32 +51,32 @@ Camera  _camera;
 //glm::mat4 _viewMatrix(1.0f);
 glm::mat4 _projMatrix(1.0f);
 
-//ºÚ¶´ÖÐÐÄÎ»ÖÃ
-glm::vec3 blackhole_center_world = glm::vec3(0.0f, 0.0f, 0.0f); // Ä¬ÈÏÔÚÊÀ½çÔ­µã
+//ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+glm::vec3 blackhole_center_world = glm::vec3(0.0f, 0.0f, 0.0f); // Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½
 
 
-double lastTimeForFPS = 0.0; // ÉÏ´Î¼ÆËã FPS µÄÊ±¼äµã (Ãë)
-int nbFrames = 0;         // ÔÚµ±Ç°¼ÆËãÖÜÆÚÄÚµÄÖ¡Êý
+double lastTimeForFPS = 0.0; // ï¿½Ï´Î¼ï¿½ï¿½ï¿½ FPS ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ (ï¿½ï¿½)
+int nbFrames = 0;         // ï¿½Úµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½Ö¡ï¿½ï¿½
 float time_previous = -1;
 float fps = 0;
-float time_elapsed; // ×ÔÉÏÒ»Ö¡¹ýÈ¥µÄÊ±¼ä£¬Ò²½Ð deltaTime
+float time_elapsed; // ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½È¥ï¿½ï¿½Ê±ï¿½ä£¬Ò²ï¿½ï¿½ deltaTime
 
-// ÔÚÄãµÄÖ÷äÖÈ¾Ñ­»· (ÀýÈç display() »òÆäµ÷ÓÃµÄº¯Êý) µÄ¿ªÍ·»ò½áÎ²
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¾Ñ­ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ display() ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÃµÄºï¿½ï¿½ï¿½) ï¿½Ä¿ï¿½Í·ï¿½ï¿½ï¿½Î²
 void calculateFPS() {
-	// »ñÈ¡µ±Ç°Ê±¼ä (Ãë)
-	double currentTime = glfwGetTime(); // Ê¹ÓÃ GLFW µÄ¼ÆÊ±Æ÷
-	nbFrames++; // Ö¡ÊýÔö¼Ó
+	// ï¿½ï¿½È¡ï¿½ï¿½Ç°Ê±ï¿½ï¿½ (ï¿½ï¿½)
+	double currentTime = glfwGetTime(); // Ê¹ï¿½ï¿½ GLFW ï¿½Ä¼ï¿½Ê±ï¿½ï¿½
+	nbFrames++; // Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	// Ã¿¸ô 1 Ãë¼ÆËãÒ»´Î FPS (»òÕßÆäËûÄãÏ²»¶µÄÊ±¼ä¼ä¸ô)
-	if (currentTime - lastTimeForFPS >= 1.0) { // Ã¿ 1.0 Ãë¼ÆËãÒ»´Î
-		// printf("%f ms/frame\n", 1000.0/double(nbFrames)); // ´òÓ¡Ã¿Ö¡ºÄÊ±
-		fps = double(nbFrames) / (currentTime - lastTimeForFPS); // ¼ÆËã FPS
-		nbFrames = 0; // ÖØÖÃÖ¡Êý¼ÆÊýÆ÷
-		lastTimeForFPS = currentTime; // ¸üÐÂÉÏ´Î¼ÆËãÊ±¼ä
+	// Ã¿ï¿½ï¿½ 1 ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ FPS (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï²ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½)
+	if (currentTime - lastTimeForFPS >= 1.0) { // Ã¿ 1.0 ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
+		// printf("%f ms/frame\n", 1000.0/double(nbFrames)); // ï¿½ï¿½Ó¡Ã¿Ö¡ï¿½ï¿½Ê±
+		fps = double(nbFrames) / (currentTime - lastTimeForFPS); // ï¿½ï¿½ï¿½ï¿½ FPS
+		nbFrames = 0; // ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		lastTimeForFPS = currentTime; // ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Î¼ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 	}
 }
-//ÏìÓ¦¼üÅÌÊäÈëÊÂ¼þ
-//ESCÍÆ³ö´°¿Ú
+//ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
+//ESCï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½
 void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -101,7 +100,7 @@ void processInput(GLFWwindow* window)
 		_camera.move(CAMERA_MOVE::MOVE_RIGHT);
 	}
 }
-//Éè¶¨Êó±êÒÆ¶¯ÊÂ¼þ, Ã¿´Î¼ÇÂ¼ÉÏÒ»´ÎxyµÄÎ»ÖÃ£¬¶Ô±È¼ÆËãpitchµÄÔöÁ¿
+//ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½Â¼ï¿½, Ã¿ï¿½Î¼ï¿½Â¼ï¿½ï¿½Ò»ï¿½ï¿½xyï¿½ï¿½Î»ï¿½Ã£ï¿½ï¿½Ô±È¼ï¿½ï¿½ï¿½pitchï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	_camera.onMouseMove(xpos, ypos);
@@ -109,52 +108,52 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 void rend()
 {
-	//ÉèÖÃÇå³ýÑÕÉ«
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	//Çå³ýµ±Ç°´°¿Ú£¬°ÑÑÕÉ«ÉèÖÃÎªÇå³ýÑÕÉ«,Çå³ýÉî¶È»º´æ
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½É«,ï¿½ï¿½ï¿½ï¿½ï¿½È»ï¿½ï¿½ï¿½
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-	//²ÎÊý1¡¢ÑÛ¾¦µÄÎ»ÖÃ    2¡¢¿´ÏòÄÄ¸ö·½Ïò    3¡¢ÄÔ´üµÄÉÏ·½ÊÇÊ²Ã´·½Ïò
+	//ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½Û¾ï¿½ï¿½ï¿½Î»ï¿½ï¿½    2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½    3ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½Ê²Ã´ï¿½ï¿½ï¿½ï¿½
 	//_viewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	_camera.update();
 	glm::mat4 viewMatrix = _camera.getMatrix();
 	glm::mat4 invViewMatrix = glm::inverse(viewMatrix);
 	
-	// --- äÖÈ¾ºÚ¶´Ð§¹û ---
-	_shader_blackhole.start(); // ÆôÓÃºÚ¶´×ÅÉ«Æ÷
+	// --- ï¿½ï¿½È¾ï¿½Ú¶ï¿½Ð§ï¿½ï¿½ ---
+	_shader_blackhole.start(); // ï¿½ï¿½ï¿½ÃºÚ¶ï¿½ï¿½ï¿½É«ï¿½ï¿½
 	float rs = 1.0f;
 	float m_val = rs / 2.0f;
-	// --- ´«µÝ Uniforms ---
+	// --- ï¿½ï¿½ï¿½ï¿½ Uniforms ---
 	_shader_blackhole.setVec3("iResolution", glm::vec3(_width, _height, 0.0f));
 	_shader_blackhole.setFloat("iTime", (float)glfwGetTime());
-	// ´«µÝÄæÊÓÍ¼¾ØÕó£¬ÓÃÓÚ¼ÆËãÊÀ½ç×ø±ê³õÊ¼Ìõ¼þ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
 	_shader_blackhole.setMatrix("invViewMatrix", invViewMatrix);
-	// ´«µÝÎïÀí²ÎÊý
-	_shader_blackhole.setFloat("SchwarzschildRadius", rs); // ÉèÖÃÊ·ÍßÎ÷°ë¾¶
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	_shader_blackhole.setFloat("SchwarzschildRadius", rs); // ï¿½ï¿½ï¿½ï¿½Ê·ï¿½ï¿½ï¿½ï¿½ï¿½ë¾¶
 	_shader_blackhole.setFloat("M", m_val);
 	_shader_blackhole.setVec3("blackholeCenterWorld", blackhole_center_world);
-	// ´«µÝÌì¿ÕºÐÎÆÀí²ÉÑùÆ÷
-	glActiveTexture(GL_TEXTURE0);                      // ¼¤»îÎÆÀíµ¥Ôª 0
-	glBindTexture(GL_TEXTURE_CUBE_MAP, _textureSky); // °ó¶¨Ìì¿ÕºÐÎÆÀí
-	_shader_blackhole.setInt("skyboxSampler", 0);      // ¸æËß shader skybox ÔÚµ¥Ôª 0
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	glActiveTexture(GL_TEXTURE0);                      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôª 0
+	glBindTexture(GL_TEXTURE_CUBE_MAP, _textureSky); // ï¿½ï¿½ï¿½ï¿½Õºï¿½ï¿½ï¿½ï¿½ï¿½
+	_shader_blackhole.setInt("skyboxSampler", 0);      // ï¿½ï¿½ï¿½ï¿½ shader skybox ï¿½Úµï¿½Ôª 0
 
-	// --- »æÖÆÈ«ÆÁ¾ØÐÎ ---
-	glBindVertexArray(VAO_fullscreen_quad);       // °ó¶¨ VAO
-	glDrawArrays(GL_TRIANGLES, 0, 6);             // »æÖÆ´¥·¢Æ¬¶Î×ÅÉ«Æ÷
-	glBindVertexArray(0);                         // ½â°ó VAO
+	// --- ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ---
+	glBindVertexArray(VAO_fullscreen_quad);       // ï¿½ï¿½ VAO
+	glDrawArrays(GL_TRIANGLES, 0, 6);             // ï¿½ï¿½ï¿½Æ´ï¿½ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½
+	glBindVertexArray(0);                         // ï¿½ï¿½ï¿½ VAO
 
 	_shader_blackhole.end();
 
 	float distance_to_blackhole = glm::length(_camera.getPosition() - blackhole_center_world);
 	static int frame_count_for_print = 0;
-	const int print_interval_frames = 30; // Ã¿ 30 Ö¡´òÓ¡Ò»´Î
+	const int print_interval_frames = 30; // Ã¿ 30 Ö¡ï¿½ï¿½Ó¡Ò»ï¿½ï¿½
 	if (frame_count_for_print % print_interval_frames == 0) {
-		// system("cls"); // (Windows) Çå¿Õ¿ØÖÆÌ¨£¬¿ÉÑ¡
+		// system("cls"); // (Windows) ï¿½ï¿½Õ¿ï¿½ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½Ñ¡
 		printf("--- Frame %d ---\n", frame_count_for_print);
-		printf("Distance to BH: %.2f Rs (based on simulation units)\n", distance_to_blackhole / rs); // ³ýÒÔ rs ½«Æä×ª»»ÎªÒÔ "Ê·ÍßÎ÷°ë¾¶=1" Îªµ¥Î»µÄ±¶Êý
+		printf("Distance to BH: %.2f Rs (based on simulation units)\n", distance_to_blackhole / rs); // ï¿½ï¿½ï¿½ï¿½ rs ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½Îªï¿½ï¿½ "Ê·ï¿½ï¿½ï¿½ï¿½ï¿½ë¾¶=1" Îªï¿½ï¿½Î»ï¿½Ä±ï¿½ï¿½ï¿½
 		printf("Camera Pos: (%.2f, %.2f, %.2f)\n", _camera.getPosition().x, _camera.getPosition().y, _camera.getPosition().z);
-		printf("FPS: %.2f\n", fps); // ¼ÙÉè fps ÒÑ¼ÆËã
+		printf("FPS: %.2f\n", fps); // ï¿½ï¿½ï¿½ï¿½ fps ï¿½Ñ¼ï¿½ï¿½ï¿½
 	}
 	frame_count_for_print++;
 }
@@ -164,28 +163,28 @@ uint createTexture(const char* _fileName)
 {
 	_pImage = ffImage::readFromFile(_fileName);
 	uint _texture = 0;
-	//ÏÈ»ñÈ¡Ò»ÕÅÎÆÀí
+	//ï¿½È»ï¿½È¡Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	glGenTextures(1, &_texture);
-	//°ó¶¨ÄÄÒ»ÖÖÎÆÀí
+	//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	glBindTexture(GL_TEXTURE_2D, _texture);
-	//S\T·½ÏòÈç¹û³¬³ö±ß½ç²ÉÓÃÖØ¸´·½°¸
+	//S\Tï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//ÎÆÀí·Å´ó£¨·Ö±æÂÊ²»±ä£©Ê±²ÉÓÃÏßÐÔ²åÖµ£¬ËõÐ¡Ê±²ÉÓÃ¾Í½ü²ÉÑù
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Å´ó£¨·Ö±ï¿½ï¿½Ê²ï¿½ï¿½ä£©Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô²ï¿½Öµï¿½ï¿½ï¿½ï¿½Ð¡Ê±ï¿½ï¿½ï¿½Ã¾Í½ï¿½ï¿½ï¿½ï¿½ï¿½
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//ÕâÀïÔø¾­³ö´í¹ý
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _pImage->getWidth(), _pImage->getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, _pImage->getData());
 
 	return _texture;
 }
-//¹¹Ôìchubemap£¬½ÓÏÂÈ¥¹¹ÔìÌì¿ÕºÐµÄVAO
+//ï¿½ï¿½ï¿½ï¿½chubemapï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÕºÐµï¿½VAO
 uint createSkyBoxTex()
 {
 	uint _tid = 0;
-	//ÏÈ»ñÈ¡Ò»ÕÅÎÆÀí
+	//ï¿½È»ï¿½È¡Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	glGenTextures(1, &_tid);
-	//°ó¶¨ÄÄÒ»ÖÖÎÆÀí
+	//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	glBindTexture(GL_TEXTURE_2D, _tid);
 
 	std::vector<std::string> _facePath =
@@ -210,12 +209,12 @@ uint createSkyBoxTex()
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	return _tid;
 }
-//¹¹ÔìÌì¿ÕºÐµÄVAO,½ÓÏÂÈ¥ÔÚmianº¯ÊýÀïµ÷ÓÃ£¬ÊµÀý»¯
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÕºÐµï¿½VAO,ï¿½ï¿½ï¿½ï¿½È¥ï¿½ï¿½mianï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½Êµï¿½ï¿½ï¿½ï¿½
 uint createSkyBoxVAO()
 {
 	uint _VAO = 0;
 	uint _VBO = 0;
-	//ÓÃÄ£ÐÍ¶¥µã¹¹½¨vbo
+	//ï¿½ï¿½Ä£ï¿½Í¶ï¿½ï¿½ã¹¹ï¿½ï¿½vbo
 	float skyboxVertices[] = {
 		// positions          
 		-1.0f,  1.0f, -1.0f,
@@ -262,26 +261,26 @@ uint createSkyBoxVAO()
 	};
 
 
-	//ºóÃæµ÷ÓÃVAO¼´¿É£¬ÒòÎªVBO°üº¬ÔÚVAOÀï
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½VAOï¿½ï¿½ï¿½É£ï¿½ï¿½ï¿½ÎªVBOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½VAOï¿½ï¿½
 	glGenVertexArrays(1, &_VAO);
 	glBindVertexArray(_VAO);
 
 
 
-	//Ç°ÃæµÄ1±íÊ¾Ò»¸öÄ£ÐÍ
+	//Ç°ï¿½ï¿½ï¿½1ï¿½ï¿½Ê¾Ò»ï¿½ï¿½Ä£ï¿½ï¿½
 	glGenBuffers(1, &_VBO);
-	//°ó¶¨£¬µÚÒ»¸ö²ÎÊýÖ¸¶¨°ó¶¨ÄÄÒ»ÖÖÀàÐÍµÄbuffer£¬ÕâÀïµÄGL_ARRAY_BUFFERÊÇÊý×éÀàÐÍµÄbuffer
+	//ï¿½ó¶¨£ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½bufferï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½GL_ARRAY_BUFFERï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½buffer
 	glBindBuffer(GL_ARRAY_BUFFER, _VBO);
-	//GL_STATIC_DRAWÕâÒ»Î»ÖÃ¸æËßOpenGLÈçºÎ´¦ÀíÊý¾Ý£¬static±íÊ¾Êý¾Ý²»»á¸ü¸Ä
-	//ÕâÒ»²½²Å¿ª±ÙÁËVBOµÄÏÔ´æ
+	//GL_STATIC_DRAWï¿½ï¿½Ò»Î»ï¿½Ã¸ï¿½ï¿½ï¿½OpenGLï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½staticï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Ý²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Å¿ï¿½ï¿½ï¿½ï¿½ï¿½VBOï¿½ï¿½ï¿½Ô´ï¿½
 	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
-	//°ó¶¨Ãª¶¨µã0£¬Èç¹ûÖ»Ê¹ÓÃVBO£¬ÄÇVBO2»á¸²¸ÇVBOµÄÃª¶¨µã£¬ÕâÑùÖ»ÄÜ»­³öÒ»¸öÈý½ÇÐÎ¡£
-	//Ê¹ÓÃVAO¿ÉÒÔ±ÜÃâÕâ¸öÎÊÌâ£¬VAO¼ÇÂ¼ÁËÃª¶¨µãÐÅÏ¢
-	//²ÎÊý1¡¢Ãª¶¨µãÐòÁÐ   2¡¢¸ÃÃª¶¨µãÊý¾ÝÓÐ¼¸¸ö    3¡¢Êý¾ÝÀàÐÍ     4¡¢ÊÇ·ñ¹éÒ»»¯     5¡¢Ã¿´Î²½³¤     6¡¢´ÓÊ²Ã´Î»ÖÃ¿ªÊ¼
+	//ï¿½ï¿½Ãªï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½ï¿½Ö»Ê¹ï¿½ï¿½VBOï¿½ï¿½ï¿½ï¿½VBO2ï¿½á¸²ï¿½ï¿½VBOï¿½ï¿½Ãªï¿½ï¿½ï¿½ã£¬ï¿½ï¿½ï¿½ï¿½Ö»ï¿½Ü»ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¡ï¿½
+	//Ê¹ï¿½ï¿½VAOï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â£¬VAOï¿½ï¿½Â¼ï¿½ï¿½Ãªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+	//ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½Ãªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½   2ï¿½ï¿½ï¿½ï¿½Ãªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½    3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½     4ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ò»ï¿½ï¿½     5ï¿½ï¿½Ã¿ï¿½Î²ï¿½ï¿½ï¿½     6ï¿½ï¿½ï¿½ï¿½Ê²Ã´Î»ï¿½Ã¿ï¿½Ê¼
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	//ÆôÓÃÃªµã0
+	//ï¿½ï¿½ï¿½ï¿½Ãªï¿½ï¿½0
 	glEnableVertexAttribArray(0);
-	//½â³ý°ó¶¨
+	//ï¿½ï¿½ï¿½ï¿½ï¿½
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	return _VAO;
@@ -304,14 +303,14 @@ uint createFullscreenQuadVAO() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0); // Î»ÖÃÊôÐÔ location = 0
+	glEnableVertexAttribArray(0); // Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ location = 0
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glBindVertexArray(0);
-	// glBindBuffer(GL_ARRAY_BUFFER, 0); // VAO½â°óÊ±Í¨³£²»ÐèÒª½â°óVBO
+	// glBindBuffer(GL_ARRAY_BUFFER, 0); // VAOï¿½ï¿½ï¿½Ê±Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½VBO
 	return VAO;
 }
 
-//¶ÁÈ¡shderÎÄ¼þ£¬È»ºó±àÒëÓëÁ´½Óshader³ÌÐò£¨glsl£©
+//ï¿½ï¿½È¡shderï¿½Ä¼ï¿½ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½shaderï¿½ï¿½ï¿½ï¿½glslï¿½ï¿½
 void initShader()
 {
 	//_shader.initShader("shader/vertexShader.glsl", "shader/fragmentShader.glsl");
@@ -323,15 +322,15 @@ void initShader()
 int main()
 {
 
-	//³õÊ¼»¯×´Ì¬»ú
+	//ï¿½ï¿½Ê¼ï¿½ï¿½×´Ì¬ï¿½ï¿½
 	glfwInit();
-	//Ö¸¶¨OpenGLµÄÖ÷°æ±¾ºÅ
+	//Ö¸ï¿½ï¿½OpenGLï¿½ï¿½ï¿½ï¿½ï¿½æ±¾ï¿½ï¿½
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	//Ö¸¶¨OpenGLµÄ´Î°æ±¾ºÅ
+	//Ö¸ï¿½ï¿½OpenGLï¿½Ä´Î°æ±¾ï¿½ï¿½
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// ÉèÖÃprofile
+	// ï¿½ï¿½ï¿½ï¿½profile
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	//´°¿Ú²»¿Éµ÷Õû´óÐ¡
+	//ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Éµï¿½ï¿½ï¿½ï¿½ï¿½Ð¡
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "opengl32", NULL, NULL);
@@ -341,52 +340,52 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
-	//´´½¨Íê±ÏÖ®ºó£¬ÐèÒªÈÃµ±Ç°´°¿ÚµÄ»·¾³ÔÚµ±Ç°Ïß³ÌÉÏ³ÉÎªµ±Ç°»·¾³£¬¾ÍÊÇ½ÓÏÂÀ´µÄ»­Í¼¶¼»á»­ÔÚÎÒÃÇ¸Õ¸Õ´´½¨µÄ´°¿ÚÉÏ
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½Òªï¿½Ãµï¿½Ç°ï¿½ï¿½ï¿½ÚµÄ»ï¿½ï¿½ï¿½ï¿½Úµï¿½Ç°ï¿½ß³ï¿½ï¿½Ï³ï¿½Îªï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½Í¼ï¿½ï¿½ï¿½á»­ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸Õ¸Õ´ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
 	glfwMakeContextCurrent(window);
 
-	//gladÑ°ÕÒopenglµÄº¯ÊýµØÖ·£¬µ÷ÓÃopenglµÄº¯ÊýÇ°ÐèÒª³õÊ¼»¯glad
+	//gladÑ°ï¿½ï¿½openglï¿½Äºï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½openglï¿½Äºï¿½ï¿½ï¿½Ç°ï¿½ï¿½Òªï¿½ï¿½Ê¼ï¿½ï¿½glad
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
 	glViewport(0, 0, WIDTH, HEIGHT);
-	//¸æËßGLFWÎÒÃÇÏ£ÍûÃ¿µ±´°¿Úµ÷Õû´óÐ¡µÄÊ±ºòµ÷ÓÃÕâ¸öº¯Êý
+	//ï¿½ï¿½ï¿½ï¿½GLFWï¿½ï¿½ï¿½ï¿½Ï£ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	//Éè¶¨Êó±ê²»¿É¼û
+	//ï¿½è¶¨ï¿½ï¿½ê²»ï¿½É¼ï¿½
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	//Éè¶¨Êó±êÒÆ¶¯ÊÂ¼þ
+	//ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½Â¼ï¿½
 	glfwSetCursorPosCallback(window, mouse_callback);
 
 
-	//cameraµÄ³õÊ¼»¯
+	//cameraï¿½Ä³ï¿½Ê¼ï¿½ï¿½
 	_camera.lookAt(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	_camera.setSpeed(0.1f);
 
 	
-	_textureSky = createSkyBoxTex(); // ±£ÁôÌì¿ÕºÐÎÆÀí¼ÓÔØ
-	VAO_fullscreen_quad = createFullscreenQuadVAO(); // ´´½¨È«ÆÁ¾ØÐÎ VAO
+	_textureSky = createSkyBoxTex(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	VAO_fullscreen_quad = createFullscreenQuadVAO(); // ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ VAO
 	initShader();
 
 
-	/*******************************************äÖÈ¾Ñ­»·************************************************/
-	//glfwWindowShouldClose()¼ì²é´°¿ÚÊÇ·ñÐèÒª¹Ø±Õ¡£Èç¹ûÊÇ£¬ÓÎÏ·Ñ­»·¾Í½áÊøÁË£¬½ÓÏÂÀ´ÎÒÃÇ½«»áÇåÀí×ÊÔ´£¬½áÊø³ÌÐò
+	/*******************************************ï¿½ï¿½È¾Ñ­ï¿½ï¿½************************************************/
+	//glfwWindowShouldClose()ï¿½ï¿½é´°ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Òªï¿½Ø±Õ¡ï¿½ï¿½ï¿½ï¿½ï¿½Ç£ï¿½ï¿½ï¿½Ï·Ñ­ï¿½ï¿½ï¿½Í½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	while (!glfwWindowShouldClose(window))
 	{
 		double currentFrameTime = glfwGetTime();
 		if (time_previous < 0) time_previous = currentFrameTime; // time_previous Ó¦Îª double
-		time_elapsed = static_cast<float>(currentFrameTime - time_previous); // time_elapsed ÈÔÎª float
+		time_elapsed = static_cast<float>(currentFrameTime - time_previous); // time_elapsed ï¿½ï¿½Îª float
 		time_previous = currentFrameTime;
-		// --- deltaTime ¼ÆËã½áÊø ---
+		// --- deltaTime ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ---
 
-		calculateFPS(); // ¼ÆËã FPS
-		//ÏìÓ¦¼üÅÌÊäÈë
+		calculateFPS(); // ï¿½ï¿½ï¿½ï¿½ FPS
+		//ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		processInput(window);
-		//µ÷ÓÃrendº¯Êý»æÍ¼
+		//ï¿½ï¿½ï¿½ï¿½rendï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼
 		rend();
-		//½»»»ÑÕÉ«»º³å 
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ 
 		glfwSwapBuffers(window);
-		//´¦ÀíÊÂ¼þ
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
 		glfwPollEvents();
 	}
 	glfwTerminate();

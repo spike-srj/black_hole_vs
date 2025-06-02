@@ -1,2 +1,0 @@
-D:\OpenGL-Learn\opengl\blackhole_demo\Debug\blackhole_demo.exe
-E:\code\opengl\blackhole_demo\Debug\blackhole_demo.exe
