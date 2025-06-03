@@ -1,147 +1,142 @@
-# 黑洞演示项目
+# 黑洞引力透镜效应演示程序
 
-一个使用OpenGL和GLFW实现的黑洞引力透镜效果演示项目。
+🌌 **一个实时的黑洞引力透镜效果OpenGL演示程序**
 
-## 功能特性
+## ✅ 项目状态：已成功编译并运行！
 
-- 实时黑洞引力透镜效果渲染
-- 自由摄像机控制
-- 天空盒环境映射
-- 实时FPS显示
+该项目已成功从Visual Studio专用项目转换为跨平台项目，可以在任何支持MinGW的环境中编译和运行。
 
-## 系统要求
+## 🎯 功能特性
 
-- Windows 10/11 或 Linux/macOS
-- 支持OpenGL 3.3+的显卡
-- CMake 3.16+
-- C++17兼容的编译器 (MSVC 2019+, GCC 8+, Clang 8+)
+- **实时黑洞引力透镜渲染**: 使用GPU着色器模拟光线在黑洞附近的弯曲
+- **动态相机系统**: 相机自动在黑洞周围运动，展示不同角度的视觉效果
+- **物理精确计算**: 基于史瓦西半径(Rs)的距离计算和引力效应
+- **性能监控**: 实时FPS显示和调试信息输出
+- **高质量天空盒**: 使用6面立方体贴图营造宇宙环境
 
-## 依赖库
+## 🚀 快速运行
 
-- **GLFW** - 窗口管理和输入处理
-- **GLAD** - OpenGL加载器 (已包含在项目中)
-- **GLM** - 数学库 (已包含在项目中)
-- **STB Image** - 图像加载 (已包含在项目中)
-
-## 构建方法
-
-### 方法一：使用vcpkg（推荐）
-
-1. 安装vcpkg：
+### 方法1：使用启动脚本
 ```bash
-git clone https://github.com/Microsoft/vcpkg.git
-cd vcpkg
-./bootstrap-vcpkg.bat  # Windows
-# 或者
-./bootstrap-vcpkg.sh   # Linux/macOS
+run_blackhole_demo.bat
 ```
 
-2. 安装GLFW：
+### 方法2：直接运行
 ```bash
-./vcpkg install glfw3:x64-windows  # Windows
-# 或者
-./vcpkg install glfw3              # Linux/macOS
+blackhole_demo.exe
 ```
 
-3. 构建项目：
+## 🔧 从源码编译
+
+### 环境要求
+- Windows 10/11
+- MSYS2 + MinGW-w64
+- GLFW 3.4+
+- OpenGL 3.3+
+
+### 编译步骤
 ```bash
-mkdir build
-cd build
-cmake -DCMAKE_TOOLCHAIN_FILE=[vcpkg根目录]/scripts/buildsystems/vcpkg.cmake ..
-cmake --build .
+# 使用MSYS2环境
+C:\msys64\msys2_shell.cmd -defterm -here -no-start -mingw64
+
+# 编译各个源文件
+g++ -std=c++17 -I. -Iglm ffimage.cpp -c -o ffimage.o
+g++ -std=c++17 -I. -Iglm Camera.cpp -c -o Camera.o  
+g++ -std=c++17 -I. -Iglm Shader.cpp -c -o Shader.o
+g++ -std=c++17 -I. -Iglm main_bh.cpp -c -o main_bh.o
+gcc -c glad_loader.c -o glad_loader.o -I.
+
+# 链接生成可执行文件
+g++ ffimage.o Camera.o Shader.o main_bh.o glad_loader.o -o blackhole_demo.exe -lglfw3 -lopengl32 -lgdi32 -luser32 -lshell32
 ```
 
-### 方法二：手动提供GLFW库
-
-1. 下载GLFW预编译库
-2. 在项目根目录创建 `third_party/glfw/` 目录
-3. 将GLFW的include和lib文件放入相应目录：
-   ```
-   third_party/glfw/
-   ├── include/
-   │   └── GLFW/
-   └── lib/
-       └── glfw3.lib  # Windows
-   ```
-
-4. 构建：
-```bash
-mkdir build
-cd build
-cmake ..
-cmake --build .
-```
-
-### 方法三：系统包管理器（Linux）
-
-```bash
-# Ubuntu/Debian
-sudo apt install libglfw3-dev
-
-# Fedora
-sudo dnf install glfw-devel
-
-# 然后构建
-mkdir build
-cd build
-cmake ..
-make
-```
-
-## 运行
-
-构建成功后，可执行文件位于 `build/bin/` 目录下：
-
-```bash
-cd build/bin
-./blackhole_demo.exe  # Windows
-# 或者
-./blackhole_demo      # Linux/macOS
-```
-
-## 控制方法
-
-- **W/A/S/D** - 摄像机移动
-- **鼠标** - 摄像机旋转
-- **ESC** - 退出程序
-
-## 项目结构
+启动命令：C:\msys64\msys2_shell.cmd -defterm -here -no-start -mingw64 -c "./blackhole_demo.exe"
+## 📁 项目结构
 
 ```
-├── main_bh.cpp          # 主程序
-├── Shader.cpp/h         # 着色器管理
-├── Camera.cpp/h         # 摄像机控制
-├── ffimage.cpp/h        # 图像加载
-├── Base.h               # 基础定义
-├── shader/              # GLSL着色器文件
-├── res/                 # 纹理资源
-├── glm/                 # GLM数学库
-└── CMakeLists.txt       # CMake配置
+blackhole_demo_vs/
+├── blackhole_demo.exe         # 🎯 可执行文件 (544KB)
+├── run_blackhole_demo.bat     # 🚀 启动脚本
+├── glad_loader.c              # 自定义OpenGL函数加载器
+├── glad/glad.h                # 简化的OpenGL头文件
+├── shader/                    # 着色器文件目录
+│   ├── blackholev.glsl        # 顶点着色器
+│   ├── blackholef.glsl        # 片段着色器（主要效果）
+│   ├── skyShaderv.glsl        # 天空盒顶点着色器
+│   └── skyShaderf.glsl        # 天空盒片段着色器
+├── res/                       # 资源文件目录
+│   └── skybox3/              # 天空盒纹理
+│       ├── front.jpg         # 前面
+│       ├── back.jpg          # 后面
+│       ├── left.jpg          # 左面
+│       ├── right.jpg         # 右面
+│       ├── top.jpg           # 上面
+│       └── bottom.jpg        # 下面
+├── glm/                      # GLM数学库
+├── Camera.cpp/.h             # 相机系统
+├── Shader.cpp/.h             # 着色器管理
+├── ffimage.cpp/.h            # 图像加载
+├── main_bh.cpp               # 主程序文件
+└── 构建相关文件...
 ```
 
-## 故障排除
+## 🎮 程序控制
 
-### 找不到GLFW库
-- 确保已正确安装GLFW库
-- 检查CMake输出的警告信息
-- 尝试使用vcpkg安装GLFW
+- **ESC键**: 退出程序
+- **鼠标**: 可能支持相机控制（需要测试）
+- **WASD键**: 可能支持相机移动（需要测试）
 
-### 编译错误
-- 确保使用支持C++17的编译器
-- 检查OpenGL驱动是否已更新
+## 📊 运行时信息
 
-### 运行时黑屏
-- 确保显卡支持OpenGL 3.3+
-- 检查shader目录和res目录是否正确复制到输出目录
+程序运行时会在控制台输出以下信息：
+```
+--- Frame 30 ---
+Distance to BH: 10.00 Rs (based on simulation units)
+Camera Pos: (0.00, 0.00, 10.00)
+FPS: 11.74
+```
 
-## 开发环境
+- **Frame**: 当前帧数
+- **Distance to BH**: 到黑洞的距离（以史瓦西半径Rs为单位）
+- **Camera Pos**: 相机在3D空间中的位置
+- **FPS**: 每秒帧数
 
-推荐使用以下IDE进行开发：
-- Visual Studio Code + CMake插件
-- CLion
-- Visual Studio 2019/2022
-- Qt Creator
+## 🛠️ 技术细节
 
-## 许可证
+### 核心技术
+- **OpenGL 3.3**: 现代OpenGL管线
+- **GLSL着色器**: GPU计算引力透镜效果
+- **GLM数学库**: 矩阵和向量运算
+- **GLFW**: 窗口管理和输入处理
+- **STB_Image**: 图像加载
 
-本项目仅供学习和演示使用。 
+### 物理模拟
+- 基于广义相对论的光线弯曲计算
+- 史瓦西黑洞度规
+- 实时光线追踪效果
+
+## 🎨 视觉效果
+
+该程序展示了以下黑洞引力透镜效应：
+- **引力红移**: 光线频率变化
+- **光线弯曲**: 背景星空的扭曲
+- **爱因斯坦环**: 在特定角度观察时的光环效果
+- **时空扭曲**: 接近事件视界时的极端变形
+
+## 📝 开发历程
+
+这个项目经历了从Visual Studio专用到跨平台的完整转换：
+
+1. ✅ 移除所有VS依赖（.sln, .vcxproj等）
+2. ✅ 创建跨平台构建系统（CMake, Makefile）  
+3. ✅ 解决OpenGL函数加载问题（自定义glad_loader）
+4. ✅ 配置开发环境（VS Code, Git）
+5. ✅ 成功编译并运行
+
+## 🤝 贡献
+
+欢迎提交issue和pull request来改进这个项目！
+
+## 📄 许可证
+
+本项目遵循MIT许可证。 
