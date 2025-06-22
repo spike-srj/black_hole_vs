@@ -70,4 +70,9 @@ external/
 
 # 包管理器文件
 vcpkg_installed/
-conan.lock 
+conan.lock
+
+# 大型资源文件
+*.exr
+*.hdr
+# 如果有其他大型文件格式，可以在这里添加 
