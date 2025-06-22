@@ -19,5 +19,57 @@
     },
     "cmake.debugConfig": {
         "cwd": "${workspaceFolder}/build/bin"
+    },
+    
+    // 中文编码支持配置
+    "files.encoding": "utf8",
+    "files.autoGuessEncoding": true,
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.profiles.windows": {
+        "PowerShell": {
+            "source": "PowerShell",
+            "args": ["-ExecutionPolicy", "Bypass"]
+        },
+        "Command Prompt": {
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+            ],
+            "args": ["/K", "chcp 65001"]
+        },
+        "MSYS2": {
+            "path": "C:\\msys64\\usr\\bin\\bash.exe",
+            "args": [
+                "--login",
+                "-i"
+            ],
+            "env": {
+                "MSYSTEM": "MINGW64",
+                "CHERE_INVOKING": "1"
+            }
+        }
+    },
+    
+    // 编辑器中文显示配置
+    "editor.fontFamily": "'Consolas', 'Microsoft YaHei UI', 'Courier New', monospace",
+    "editor.fontSize": 14,
+    "terminal.integrated.fontFamily": "'Consolas', 'Microsoft YaHei UI', 'Courier New', monospace",
+    "terminal.integrated.fontSize": 12,
+    
+    // 文件编码检测和转换
+    "files.exclude": {
+        "**/*.o": true,
+        "**/build/**": true
+    },
+    
+    // GLSL语法高亮增强
+    "glsl-canvas.refreshOnChange": true,
+    
+    // 中文输入法支持
+    "editor.acceptSuggestionOnEnter": "off",
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": false,
+        "strings": false
     }
 } 

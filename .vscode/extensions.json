@@ -3,8 +3,10 @@
         "ms-vscode.cpptools",
         "ms-vscode.cpptools-extension-pack",
         "ms-vscode.cmake-tools",
-        "twxs.cmake",
         "slevesque.shader",
-        "ms-vscode.hexeditor"
+        "raczzalan.webgl-glsl-editor",
+        "ms-ceintl.vscode-language-pack-zh-hans",
+        "danielpinto8zz6.c-cpp-compile-run",
+        "formulahendry.code-runner"
     ]
 }

@@ -189,12 +189,12 @@ uint createSkyBoxTex()
 
 	std::vector<std::string> _facePath =
 	{
-			"res/skybox3/right.jpg",
-			"res/skybox3/left.jpg",
-			"res/skybox3/top.jpg",
-			"res/skybox3/bottom.jpg",
-			"res/skybox3/front.jpg",
-			"res/skybox3/back.jpg"
+			"res/skybox/right.jpg",
+			"res/skybox/left.jpg",
+			"res/skybox/top.jpg",
+			"res/skybox/bottom.jpg",
+			"res/skybox/front.jpg",
+			"res/skybox/back.jpg"
 	};
 	for (int i = 0; i < 6; i++)
 	{
