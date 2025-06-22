@@ -17,9 +17,14 @@ Makefile
 *.vcxproj.user
 *.sln
 
-# Visual Studio
+# Visual Studio 和 VS Code
 .vs/
+**/.vs/
 *.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
 
 # 编译产物
 *.exe
@@ -33,6 +38,15 @@ Makefile
 *.exp
 *.lib
 *.a
+
+# Visual Studio 缓存和临时文件
+*.vsidx
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
 
 # IDE配置文件（保留.vscode/用于项目配置）
 .idea/
