@@ -14,6 +14,9 @@ const int MAX_STEPS = 2000;         // Maximum number of steps for ray tracing. 
 const float MAX_TRACE_R = 50.0;     // Maximum trace distance in SchwarzschildRadius units. If a ray goes beyond this, we assume it has escaped.
 const float PI = 3.14159265359;
 const float EPSILON = 1e-5;         // A small number to avoid division by zero and other floating point issues.
+const float HORIZON_TOL = 1.001;    // r <= Rs*HORIZON_TOL is considered inside horizon for termination
+const int   MAX_REFINES = 6;        // Maximum backtracking refinements per step
+const float FLIP_HYST_FRAC = 0.02;  // Radial hysteresis fraction to avoid flip ping-pong
 
 // Adaptive step size parameters for the RK4 integrator.
 // We will further limit step by Δr and Δφ constraints each step.
@@ -42,11 +45,16 @@ bool is_inf(float v) { return abs(v) > 1e30; }
 bool is_bad(float v) { return is_nan(v) || is_inf(v); }
 bool any_bad(vec3 v) { return is_bad(v.x) || is_bad(v.y) || is_bad(v.z); }
 
+// Small helpers
+bool near_horizon(float r) { return r <= SchwarzschildRadius * HORIZON_TOL; }
+float safe_len(vec3 v) { return length(v); }
+float safe_max_r(float r) { return max(r, SchwarzschildRadius); }
+
 
 // --- Geodesic Integration ---
 
-// Calculates the derivatives (dr/dλ, dφ/dλ) for the geodesic equations of a photon in Schwarzschild spacetime.
-// These equations describe the path of light. We integrate in the orbital plane, so dθ/dλ = 0.
+// Calculates derivatives (dr/dλ, dφ/dλ) for null geodesics in Schwarzschild spacetime
+// We integrate in the orbital plane (θ fixed), so only r and φ are evolved.
 vec2 get_geodesic_derivatives(float r, float E, float L) {
     // If inside or too close to the event horizon, motion effectively stops.
     if (r <= SchwarzschildRadius * 1.001 || r < EPSILON) {
@@ -70,9 +78,8 @@ vec2 get_geodesic_derivatives(float r, float E, float L) {
     return vec2(dr_dlambda, dphi_dlambda);
 }
 
-// Performs a single step of the light ray's path using the 4th-order Runge-Kutta (RK4) method.
-// Direction flip is handled by the caller; this function only advances state with the provided sign.
-StepResult light_step_rk4(PhotonState currentState, float k_r_direction, float E, float L, float d_lambda) {
+// One RK4 advance for (r, φ). Caller manages radial direction flips.
+StepResult advance_rk4(PhotonState currentState, float k_r_direction, float E, float L, float d_lambda) {
     StepResult result;
     result.next_k_r_direction = k_r_direction; // Caller decides flips; default unchanged.
 
@@ -121,8 +128,37 @@ float compute_adaptive_step_size(float r, float dr_dl_abs, float dphi_dl_abs) {
     return clamp(d_lambda, D_LAMBDA_MIN, D_LAMBDA_MAX);
 }
 
-// When a photon escapes, this function calculates its final direction vector in world space.
-// This direction is then used to sample the skybox, creating the gravitational lensing effect.
+// Build orthonormal basis (u, v) for orbital plane given orbit normal and initial rel pos
+void build_orbit_plane_basis(vec3 orbit_normal_w, vec3 p_rel_initial_cart, out vec3 u_plane_w, out vec3 v_plane_w) {
+    u_plane_w = normalize(p_rel_initial_cart);
+    v_plane_w = cross(orbit_normal_w, u_plane_w);
+    if (safe_len(v_plane_w) < 1e-8) {
+        vec3 helper = abs(orbit_normal_w.x) < 0.9 ? vec3(1.0,0.0,0.0) : vec3(0.0,1.0,0.0);
+        v_plane_w = normalize(cross(orbit_normal_w, helper));
+        u_plane_w = normalize(cross(v_plane_w, orbit_normal_w));
+    } else {
+        v_plane_w = normalize(v_plane_w);
+    }
+}
+
+// Take a robust step with backtracking against forbidden region and horizon crossing
+StepResult robust_step(PhotonState state, float k_r_dir, float E, float L, float d_lambda_try) {
+    StepResult step_res;
+    float d_lambda_used = d_lambda_try;
+    for (int refine = 0; refine < MAX_REFINES; refine++) {
+        step_res = advance_rk4(state, k_r_dir, E, L, d_lambda_used);
+        float r_new = step_res.next_state.r;
+        float dr_sq_new = E * E - effective_potential(max(r_new, SchwarzschildRadius * 1.000001), L);
+        if (dr_sq_new >= 0.0 && !is_bad(r_new) && !near_horizon(r_new)) {
+            break;
+        }
+        d_lambda_used *= 0.5;
+    }
+    return step_res;
+}
+
+// Compute final escape direction in world space from final state and plane basis
+// This direction is used to sample the skybox.
 vec3 getFinalDirection(
     PhotonState final_state,
     float k_r_direction,
@@ -150,7 +186,7 @@ vec3 getFinalDirection(
     k_orbit_plane.x = final_dr_dl * cos_phi - final_state.r * final_dphi_dl * sin_phi; // component along u_plane_w
     k_orbit_plane.y = final_dr_dl * sin_phi + final_state.r * final_dphi_dl * cos_phi; // component along v_plane_w
 
-    // 3. Transform the 2D velocity vector from the orbital plane's basis back to 3D world coordinates.
+    // 3. Transform back to 3D world coordinates.
     vec3 dir = k_orbit_plane.x * u_plane_w + k_orbit_plane.y * v_plane_w;
     if (length(dir) < 1e-12 || any_bad(dir)) {
         return initial_ray_dir; // fallback to initial direction to avoid NaN/Inf
@@ -196,8 +232,8 @@ void main()
     }
    
     // Create an orthonormal basis for the orbital plane.
-    vec3 u_plane_w = normalize(p_rel_initial_cart); // u-vector points to the initial position.
-    vec3 v_plane_w = cross(orbit_normal_w, u_plane_w); // v-vector is orthogonal to u and the normal.
+    vec3 u_plane_w, v_plane_w;
+    build_orbit_plane_basis(orbit_normal_w, p_rel_initial_cart, u_plane_w, v_plane_w);
 
     // --- 4. Initialize Photon State ---
     PhotonState currentState;
@@ -237,19 +273,8 @@ void main()
 
         // Compute adaptive step to limit Δr and Δφ
         float d_lambda_try = compute_adaptive_step_size(currentState.r, dr_dl_abs, dphi_dl_abs);
-
-        // Trial step; if we step into forbidden region ((dr/dλ)^2 < 0), backtrack by halving
-        StepResult step_res;
-        float d_lambda_used = d_lambda_try;
-        for (int refine = 0; refine < 6; refine++) {
-            step_res = light_step_rk4(currentState, k_r_direction, E_const, L_const, d_lambda_used);
-            float r_new = step_res.next_state.r;
-            float dr_sq_new = E_const * E_const - effective_potential(max(r_new, SchwarzschildRadius * 1.000001), L_const);
-            if (dr_sq_new >= 0.0 && !is_bad(r_new)) {
-                break; // acceptable
-            }
-            d_lambda_used *= 0.5; // backtrack
-        }
+        // Robust step with backtracking
+        StepResult step_res = robust_step(currentState, k_r_direction, E_const, L_const, d_lambda_try);
 
         // Turning-point and direction flip logic with hysteresis
         float r_old = currentState.r;
@@ -265,7 +290,7 @@ void main()
         // Apply hysteresis: avoid flipping again until moved away a bit
         bool allow_flip = true;
         if (last_flip_r > 0.0) {
-            allow_flip = abs(r_new_final - last_flip_r) > (0.02 * max(r_new_final, SchwarzschildRadius));
+            allow_flip = abs(r_new_final - last_flip_r) > (FLIP_HYST_FRAC * safe_max_r(r_new_final));
         }
 
         if (allow_flip && (crossed_expectation || near_turning)) {
