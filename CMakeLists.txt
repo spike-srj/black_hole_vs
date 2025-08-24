@@ -4,31 +4,34 @@ project(blackhole_demo LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 添加源文件
-set(SOURCES
-    main_bh.cpp
+############################################
+# Layout
+#  - src/            -> core sources
+#  - include/        -> public headers
+#  - third_party/    -> vendored sources (e.g. glad)
+#  - shader/, res/   -> runtime assets (copied to bin/)
+#  - examples/       -> optional examples (off by default)
+############################################
+
+# Core library
+add_library(blackhole_core STATIC
     Shader.cpp
     Camera.cpp
     ffimage.cpp
     glad.c
 )
 
-set(HEADERS
-    Base.h
-    Shader.h
-    Camera.h
-    ffimage.h
-    stb_image.h
+target_include_directories(blackhole_core
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}          # for glad headers under ./glad
+        ${CMAKE_CURRENT_SOURCE_DIR}/glm
 )
 
-# 创建可执行文件
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+# 创建主可执行文件
+add_executable(${PROJECT_NAME} main_bh.cpp)
 
-# 设置包含目录
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/glm
-)
+target_link_libraries(${PROJECT_NAME} PRIVATE blackhole_core)
 
 # 寻找系统级的依赖库
 find_package(OpenGL REQUIRED)
@@ -65,6 +68,16 @@ endif()
 # 链接OpenGL
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)
 
+# 编译器特定设置（应用于所有目标）
+if(MSVC)
+    target_compile_definitions(blackhole_core PRIVATE _CRT_SECURE_NO_WARNINGS)
+    target_compile_options(blackhole_core PRIVATE /W3)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W3)
+else()
+    target_compile_options(blackhole_core PRIVATE -Wall -Wextra)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+endif()
+
 # 编译器特定设置
 if(MSVC)
     target_compile_definitions(${PROJECT_NAME} PRIVATE _CRT_SECURE_NO_WARNINGS)
@@ -74,9 +87,7 @@ else()
 endif()
 
 # 设置输出目录
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-)
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # 复制资源文件到构建目录
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -92,3 +103,9 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 message(STATUS "Project: ${PROJECT_NAME}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "C++ standard: ${CMAKE_CXX_STANDARD}") 
+
+# 可选：构建 examples
+option(BUILD_EXAMPLES "Build example targets" OFF)
+if(BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()

@@ -1,4 +1,4 @@
-#include "shader.h"
+#include "Shader.h"
 void Shader::initShader(const char* _vertexPath, const char* _fragPath)
 {
 	std::string _vertexCode("");
