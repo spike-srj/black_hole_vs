@@ -16,8 +16,11 @@ const float PI = 3.14159265359;
 const float EPSILON = 1e-5;         // A small number to avoid division by zero and other floating point issues.
 
 // Adaptive step size parameters for the RK4 integrator.
-const float D_LAMBDA_MIN = 0.005;   // Minimum step size, used when close to the black hole for precision.
-const float D_LAMBDA_MAX = 0.5;    // Maximum step size, used when far away for performance.
+// We will further limit step by Δr and Δφ constraints each step.
+const float D_LAMBDA_MIN = 0.0005;  // Minimum step size, used when close to the black hole for precision.
+const float D_LAMBDA_MAX = 0.25;    // Maximum step size, used when far away for performance.
+const float MAX_DR_FRACTION = 0.02;  // Limit |Δr| <= MAX_DR_FRACTION * max(r, Rs) per step
+const float MAX_DPHI = 0.05;         // Limit |Δφ| per step to avoid spinning too much near photon sphere
 
 // --- Structs ---
 // Represents the state of a photon in its 2D orbital plane.
@@ -32,6 +35,12 @@ struct StepResult {
     PhotonState next_state;     // The photon's state after the step.
     float next_k_r_direction;   // The radial direction (+1 away, -1 towards) after the step.
 };
+
+// --- Numeric utilities ---
+bool is_nan(float v) { return !(v == v); }
+bool is_inf(float v) { return abs(v) > 1e30; }
+bool is_bad(float v) { return is_nan(v) || is_inf(v); }
+bool any_bad(vec3 v) { return is_bad(v.x) || is_bad(v.y) || is_bad(v.z); }
 
 
 // --- Geodesic Integration ---
@@ -62,10 +71,10 @@ vec2 get_geodesic_derivatives(float r, float E, float L) {
 }
 
 // Performs a single step of the light ray's path using the 4th-order Runge-Kutta (RK4) method.
-// This is more accurate than simple Euler integration for solving the differential equations.
+// Direction flip is handled by the caller; this function only advances state with the provided sign.
 StepResult light_step_rk4(PhotonState currentState, float k_r_direction, float E, float L, float d_lambda) {
     StepResult result;
-    result.next_k_r_direction = k_r_direction; // Assume direction doesn't change by default.
+    result.next_k_r_direction = k_r_direction; // Caller decides flips; default unchanged.
 
     // k1: derivative at the start of the interval.
     vec2 deriv1 = get_geodesic_derivatives(currentState.r, E, L);
@@ -91,27 +100,25 @@ StepResult light_step_rk4(PhotonState currentState, float k_r_direction, float E
     result.next_state.r = currentState.r + (d_lambda / 6.0) * (dr1 + 2.0 * dr2 + 2.0 * dr3 + dr4);
     result.next_state.phi = currentState.phi + (d_lambda / 6.0) * (dp1 + 2.0 * dp2 + 2.0 * dp3 + dp4);
     
-    // --- Update radial direction (handle turning points) ---
-    // A turning point is where the ray is closest to the black hole and starts moving away.
-    float r_new = result.next_state.r;
-    vec2 next_derivs = get_geodesic_derivatives(r_new, E, L);
-    // If the radial velocity at the new position is effectively zero, it's a turning point. Flip direction.
-    if (next_derivs.x < EPSILON) {
-        result.next_k_r_direction = -k_r_direction;
-    }
+    // Radial direction is not flipped here; caller performs robust turning-point logic.
 
     return result;
 }
 
-// Determines the adaptive step size based on distance to the black hole.
-// Smaller steps are taken when closer for better accuracy near the strong gravitational field.
-float get_adaptive_step_size(float r) {
-    float r_close = SchwarzschildRadius * 3.0;
-    float r_far = SchwarzschildRadius * 30.0;
-    
-    // Linearly interpolate between min and max step size based on distance.
-    float t = clamp((r - r_close) / (r_far - r_close), 0.0, 1.0);
-    return mix(D_LAMBDA_MIN, D_LAMBDA_MAX, t);
+// Effective potential V_eff(r) = (L^2/r^2) * (1 - Rs/r)
+float effective_potential(float r, float L) {
+    float r2 = r * r;
+    return (L * L / r2) * (1.0 - SchwarzschildRadius / r);
+}
+
+// Compute adaptive step based on local derivatives to bound Δr and Δφ per step
+float compute_adaptive_step_size(float r, float dr_dl_abs, float dphi_dl_abs) {
+    float rs = SchwarzschildRadius;
+    float max_dr = MAX_DR_FRACTION * max(r, rs);
+    float dl_from_dr = (dr_dl_abs > EPSILON) ? (max_dr / dr_dl_abs) : D_LAMBDA_MIN;
+    float dl_from_dphi = (dphi_dl_abs > EPSILON) ? (MAX_DPHI / dphi_dl_abs) : D_LAMBDA_MAX;
+    float d_lambda = min(min(dl_from_dr, dl_from_dphi), D_LAMBDA_MAX);
+    return clamp(d_lambda, D_LAMBDA_MIN, D_LAMBDA_MAX);
 }
 
 // When a photon escapes, this function calculates its final direction vector in world space.
@@ -144,7 +151,11 @@ vec3 getFinalDirection(
     k_orbit_plane.y = final_dr_dl * sin_phi + final_state.r * final_dphi_dl * cos_phi; // component along v_plane_w
 
     // 3. Transform the 2D velocity vector from the orbital plane's basis back to 3D world coordinates.
-    return normalize(k_orbit_plane.x * u_plane_w + k_orbit_plane.y * v_plane_w);
+    vec3 dir = k_orbit_plane.x * u_plane_w + k_orbit_plane.y * v_plane_w;
+    if (length(dir) < 1e-12 || any_bad(dir)) {
+        return initial_ray_dir; // fallback to initial direction to avoid NaN/Inf
+    }
+    return normalize(dir);
 }
 
 void main()
@@ -203,6 +214,7 @@ void main()
     // We trace the ray backwards from the camera until it either hits the horizon or escapes to infinity.
     bool hit_horizon = false;
     float max_trace_dist_sq = pow(MAX_TRACE_R * SchwarzschildRadius, 2.0);
+    float last_flip_r = -1.0; // hysteresis for flipping to avoid ping-pong
 
     for (int j = 0; j < MAX_STEPS; j++) {
         // Check for termination conditions.
@@ -214,13 +226,58 @@ void main()
             break; // Ray has escaped to "infinity".
         }
         
-        // Take one step along the geodesic using our RK4 integrator.
-        float d_lambda = get_adaptive_step_size(currentState.r);
-        StepResult step_res = light_step_rk4(currentState, k_r_direction, E_const, L_const, d_lambda);
-        
-        // Update state for the next iteration.
+        // Derivatives at current position to compute step size
+        vec2 derivs_here = get_geodesic_derivatives(currentState.r, E_const, L_const);
+        float dr_dl_abs = derivs_here.x;
+        float dphi_dl_abs = derivs_here.y;
+        if (is_bad(dr_dl_abs) || is_bad(dphi_dl_abs)) {
+            dr_dl_abs = max(dr_dl_abs, 0.0);
+            dphi_dl_abs = max(dphi_dl_abs, 0.0);
+        }
+
+        // Compute adaptive step to limit Δr and Δφ
+        float d_lambda_try = compute_adaptive_step_size(currentState.r, dr_dl_abs, dphi_dl_abs);
+
+        // Trial step; if we step into forbidden region ((dr/dλ)^2 < 0), backtrack by halving
+        StepResult step_res;
+        float d_lambda_used = d_lambda_try;
+        for (int refine = 0; refine < 6; refine++) {
+            step_res = light_step_rk4(currentState, k_r_direction, E_const, L_const, d_lambda_used);
+            float r_new = step_res.next_state.r;
+            float dr_sq_new = E_const * E_const - effective_potential(max(r_new, SchwarzschildRadius * 1.000001), L_const);
+            if (dr_sq_new >= 0.0 && !is_bad(r_new)) {
+                break; // acceptable
+            }
+            d_lambda_used *= 0.5; // backtrack
+        }
+
+        // Turning-point and direction flip logic with hysteresis
+        float r_old = currentState.r;
+        float r_new_final = step_res.next_state.r;
+        bool expect_outward = (k_r_direction > 0.0);
+        bool moved_outward = (r_new_final > r_old);
+        bool crossed_expectation = (expect_outward != moved_outward);
+
+        // Also check near turning: (dr/dλ)^2 ~ 0 at new position
+        float dr_sq_at_new = E_const * E_const - effective_potential(max(r_new_final, SchwarzschildRadius * 1.000001), L_const);
+        bool near_turning = abs(dr_sq_at_new) <= 1e-7;
+
+        // Apply hysteresis: avoid flipping again until moved away a bit
+        bool allow_flip = true;
+        if (last_flip_r > 0.0) {
+            allow_flip = abs(r_new_final - last_flip_r) > (0.02 * max(r_new_final, SchwarzschildRadius));
+        }
+
+        if (allow_flip && (crossed_expectation || near_turning)) {
+            k_r_direction = -k_r_direction;
+            last_flip_r = r_new_final;
+        }
+
+        // Commit state with sanitization
+        if (is_bad(r_new_final)) {
+            break; // abort trace and treat as escaped
+        }
         currentState = step_res.next_state;
-        k_r_direction = step_res.next_k_r_direction;
     }
 
     // --- 6. Determine Final Color ---
